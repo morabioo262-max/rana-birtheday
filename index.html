@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday ya Ranona! 🩷</title>
+    <style>
+        :root {
+            --primary-pink: #ff477e;
+            --soft-pink: #ff7096;
+            --bg-gradient: linear-gradient(135deg, #ffe5ec, #ffc2d1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-gradient);
+            color: #4a4a4a;
+            text-align: center;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ==================== 0. شاشة القفل بالباسورد ==================== */
+        #lock-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #ffccd5, #ffe5ec);
+            z-index: 100000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: all 0.6s ease-in-out;
+        }
+        
+        .lock-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(255, 71, 126, 0.2);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .lock-avatar {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            border: 5px solid var(--soft-pink);
+            object-fit: cover;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        .lock-title {
+            color: var(--primary-pink);
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #ffccd5;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            text-align: center;
+            outline: none;
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+
+        .password-input:focus {
+            border-color: var(--primary-pink);
+        }
+
+        .lock-btn {
+            background: var(--primary-pink);
+            color: white;
+            border: none;
+            padding: 12px 35px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 71, 126, 0.3);
+            transition: 0.3s;
+            width: 100%;
+        }
+
+        .lock-btn:hover { background: #e03265; transform: translateY(-2px); }
+        .error-msg { color: #d90429; font-size: 0.9rem; margin-top: 10px; display: none; font-weight: bold; }
+
+        .toggle-input { display: none; }
+
+        /* ==================== 1. شاشة التحميل والتورتة ==================== */
+        .intro-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #ff7096;
+            z-index: 99999;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            animation: fadeOutIntro 1s ease forwards 8s;
+        }
+        .cake-emoji { font-size: 5rem; animation: bounceCake 0.6s infinite alternate; }
+        .intro-text { font-size: 2rem; margin-top: 20px; font-weight: bold; opacity: 0; animation: fadeInText 1.5s ease forwards 1s; }
+
+        /* ==================== 2. محتوى الصفحة الرئيسي والقلوب ==================== */
+        .main-content {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            opacity: 0;
+            animation: fadeInMain 1.5s ease forwards 4.5s;
+        }
+        header h1 { color: var(--primary-pink); font-size: 3rem; text-shadow: 2px 2px white; }
+        header h2 { color: var(--soft-pink); font-size: 1.4rem; margin-bottom: 30px; }
+
+        .hearts-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        .bg-heart { position: absolute; color: var(--soft-pink); font-size: 22px; opacity: 0.5; animation: fall 5s infinite linear; }
+        .bg-heart:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .bg-heart:nth-child(2) { left: 30%; animation-delay: 1.5s; font-size: 28px; }
+        .bg-heart:nth-child(3) { left: 50%; animation-delay: 3s; }
+        .bg-heart:nth-child(4) { left: 75%; animation-delay: 0.8s; font-size: 32px; }
+
+        .profile-wrapper { position: relative; width: 220px; height: 220px; margin: 0 auto 30px auto; }
+        .profile-pic { width: 100%; height: 100%; border-radius: 50%; border: 8px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.15); object-fit: cover; }
+        .balloon { position: absolute; top: -10px; right: -10px; font-size: 3rem; animation: float 2s infinite alternate; }
+
+        /* التنسيق الجديد: قائمة الأزرار الملونة داخل كارت أنيق */
+        .menu-container {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 30px 20px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(255, 71, 126, 0.1);
+            max-width: 500px;
+            margin: 0 auto 40px auto;
+            border: 2px solid white;
+        }
+        
+        .btn-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            list-style: none;
+            width: 100%;
+        }
+
+        .btn-label {
+            display: block;
+            color: white;
+            padding: 16px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        /* تخصيص لون فريد ومميز لكل زرار */
+        .btn-card { background: linear-gradient(135deg, #ff477e, #ff7096); box-shadow: 0 6px 15px rgba(255, 71, 126, 0.3); }
+        .btn-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(255, 71, 126, 0.4); background: linear-gradient(135deg, #e03265, #ff477e); }
+
+        .btn-letter { background: linear-gradient(135deg, #ef233c, #d90429); box-shadow: 0 6px 15px rgba(217, 4, 41, 0.3); }
+        .btn-letter:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(217, 4, 41, 0.4); background: linear-gradient(135deg, #bd0322, #ef233c); }
+
+        .btn-timer { background: linear-gradient(135deg, #3a506b, #1c2541); box-shadow: 0 6px 15px rgba(28, 37, 65, 0.3); }
+        .btn-timer:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(28, 37, 65, 0.4); background: linear-gradient(135deg, #1c2541, #0b132b); }
+
+        .btn-gallery { background: linear-gradient(135deg, #ff85a1, #fbb1bd); box-shadow: 0 6px 15px rgba(251, 177, 189, 0.4); color: #4a4a4a; text-shadow: none; }
+        .btn-gallery:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(251, 177, 189, 0.5); background: linear-gradient(135deg, #ff7096, #ff85a1); }
+
+        .btn-moon { background: linear-gradient(135deg, #5bc0be, #3a506b); box-shadow: 0 6px 15px rgba(91, 192, 190, 0.3); }
+        .btn-moon:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(91, 192, 190, 0.4); background: linear-gradient(135deg, #3a506b, #1c2541); }
+
+        .btn-wish { background: linear-gradient(135deg, #02c39a, #00a896); box-shadow: 0 6px 15px rgba(2, 195, 154, 0.3); }
+        .btn-wish:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(2, 195, 154, 0.4); background: linear-gradient(135deg, #00a896, #028090); }
+
+
+        #showCardToggle:checked ~ .main-content .card-scene { display: block; }
+        #flipCardToggle:checked ~ .main-content .birthday-card { transform: rotateY(180deg); }
+
+        /* ==================== 3. كارت المعايدة الـ Flip ==================== */
+        .card-scene { width: 320px; height: 420px; margin: 20px auto 40px auto; perspective: 1000px; display: none; }
+        .birthday-card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); padding: 30px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .card-front { background: white; border: 5px solid var(--soft-pink); }
+        .card-front h3 { color: var(--primary-pink); font-size: 2rem; margin-top: 15px; }
+        .card-back { background: #fff0f3; transform: rotateY(180deg); border: 5px solid var(--primary-pink); text-align: right; line-height: 1.7; }
+
+        /* ==================== 4. شاشة الجواب الحمراء ==================== */
+        .love-letter-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #d90429; z-index: 10000; display: none; justify-content: center; align-items: center; flex-direction: column; color: white; padding: 40px 20px; }
+        #showLetterToggle:checked ~ .love-letter-screen { display: flex; }
+        .svg-container { width: 140px; height: 140px; margin-bottom: 20px; }
+        .heart-path { stroke: white; stroke-width: 2.5; fill: none; stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: drawHeart 3s ease-in-out forwards 0.5s; }
+        .envelope-container { width: 100%; max-width: 450px; position: relative; opacity: 0; transform: scale(0.8); animation: showEnvelope 1s ease forwards 3.5s; }
+        .letter-box { background: white; color: #333; width: 100%; padding: 30px; border-radius: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); text-align: center; }
+        .date-badge { background: #fff0f3; padding: 12px; border-radius: 8px; border-left: 5px solid #d90429; margin: 20px 0; }
+        .close-btn { background: #333; color: white; padding: 10px 30px; border-radius: 50px; margin-top: 20px; display: inline-block; cursor: pointer; font-weight: bold; }
+
+        /* ==================== 5. شاشة العداد التنازلي ==================== */
+        .timer-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #1d1e2c; z-index: 10001; display: none; justify-content: center; align-items: center; flex-direction: column; color: white; }
+        #showTimerToggle:checked ~ .timer-screen { display: flex; }
+        .timer-container { background: rgba(255, 255, 255, 0.05); padding: 40px; border-radius: 20px; backdrop-filter: blur(10px); border: 2px solid var(--soft-pink); box-shadow: 0 20px 50px rgba(0,0,0,0.4); max-width: 550px; width: 90%; }
+        .timer-title { color: var(--soft-pink); font-size: 1.7rem; margin-bottom: 10px; }
+        .timer-target { font-size: 1.1rem; color: #edf2f4; margin-bottom: 30px; opacity: 0.8; }
+        .countdown-box { display: flex; justify-content: center; gap: 12px; direction: ltr; margin-bottom: 25px; }
+        .time-segment { background: #11121a; padding: 15px 10px; border-radius: 12px; min-width: 85px; border-bottom: 4px solid var(--primary-pink); }
+        .time-num { font-size: 2.2rem; font-weight: bold; color: white; font-family: monospace; }
+        .time-label { font-size: 0.75rem; color: #8d99ae; margin-top: 5px; font-weight: bold; }
+
+        /* ==================== 6. شاشة ذكريات الطفولة والورود ==================== */
+        .gallery-screen { 
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background: linear-gradient(135deg, #fff0f3, #ffccd5); 
+            z-index: 10002; 
+            display: none; 
+            flex-direction: column; 
+            align-items: center; 
+            color: #4a4a4a; 
+            overflow-y: auto; 
+            padding: 40px 20px; 
+        }
+        #showGalleryToggle:checked ~ .gallery-screen { display: flex; }
+        .gallery-title { color: var(--primary-pink); font-size: 2.2rem; margin-bottom: 5px; text-shadow: 1px 1px white; }
+        .gallery-subtitle { color: #666; font-size: 1.1rem; margin-bottom: 30px; }
+        .photo-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
+            gap: 15px; 
+            width: 100%; 
+            max-width: 500px; 
+            margin-bottom: 30px; 
+        }
+        .photo-card { 
+            background: white; 
+            padding: 8px; 
+            border-radius: 10px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08); 
+            transform: rotate(calc(var(--r, 0) * 1deg));
+            transition: 0.3s;
+        }
+        .photo-card:hover { transform: rotate(0deg) scale(1.05); z-index: 5; }
+        .photo-card img { width: 100%; height: 150px; object-fit: cover; border-radius: 6px; background: #eee; }
+        .photo-caption { font-size: 0.85rem; color: var(--soft-pink); font-weight: bold; margin-top: 5px; }
+        .flowers-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        .falling-item { position: absolute; font-size: 24px; animation: fallItem 6s infinite linear; opacity: 0.7; }
+
+        /* ==================== 7. شاشة رقم 5: شاشة القمر التفاعلية ==================== */
+        .moon-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, #0B132B, #1C2541); z-index: 10003; display: none; flex-direction: column; justify-content: center; align-items: center; color: white; padding: 20px; }
+        #showMoonToggle:checked ~ .moon-screen { display: flex; }
+        .moon-card { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2); padding: 35px 25px; border-radius: 20px; backdrop-filter: blur(10px); max-width: 450px; width: 100%; box-shadow: 0 20px 45px rgba(0,0,0,0.5); text-align: center; }
+        .moon-input { width: 100%; height: 120px; padding: 15px; border-radius: 12px; border: 2px solid #5bc0be; background: rgba(11, 19, 43, 0.8); color: white; font-size: 1.1rem; outline: none; resize: none; margin-top: 15px; margin-bottom: 20px; font-family: inherit; }
+        .moon-send-btn { background: linear-gradient(135deg, #5bc0be, #3a506b); color: white; border: none; padding: 12px 40px; border-radius: 50px; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(91, 192, 190, 0.4); transition: 0.3s; }
+        .moon-result-container { display: none; flex-direction: column; align-items: center; animation: fadeInMain 1.5s ease forwards; }
+        .moon-glow { width: 180px; height: 180px; border-radius: 50%; background: #fff; box-shadow: 0 0 40px 15px rgba(255, 255, 255, 0.6), 0 0 80px 30px rgba(255, 230, 109, 0.3); margin-bottom: 25px; overflow: hidden; border: 6px solid #ffccd5; position: relative; animation: moonPulse 3s infinite alternate; }
+        .moon-glow img { width: 100%; height: 100%; object-fit: cover; }
+        .moon-success-text { font-size: 1.25rem; line-height: 1.7; color: #ffe5ec; font-weight: bold; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+
+        /* ==================== 8. شاشة رقم 6: مفاجأة منتصف الليل السحرية ==================== */
+        #midnight-surprise-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #11001c, #220035); z-index: 200000; display: none; justify-content: center; align-items: center; flex-direction: column; color: white; overflow: hidden; }
+        .animation-container { position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .big-heart { font-size: 8rem; color: #ff0054; position: relative; animation: pulseHeart 0.8s infinite alternate; display: inline-block; }
+        .cupid-arrow { position: absolute; font-size: 4.5rem; top: 15%; left: -150px; transform: rotate(25deg); animation: shootArrow 1.2s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards; }
+        .surprise-title { font-size: 2.2rem; color: #ffb703; font-weight: bold; margin-top: 30px; text-shadow: 0 0 15px rgba(255, 183, 3, 0.6); opacity: 0; animation: fadeInMain 0.5s ease forwards 0.8s; }
+        .grand-birthday-card { background: rgba(255, 255, 255, 0.1); border: 2px solid #ff477e; box-shadow: 0 25px 50px rgba(255, 71, 126, 0.3); backdrop-filter: blur(15px); padding: 35px 25px; border-radius: 25px; max-width: 500px; width: 90%; text-align: center; display: none; animation: scaleInCard 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .grand-birthday-card h2 { color: #ff477e; font-size: 2rem; margin-bottom: 20px; }
+        .grand-birthday-card p { font-size: 1.25rem; line-height: 1.8; color: #fff0f3; }
+
+        /* ==================== 9. شاشة رقم 7: شجرة أمنيات المستقبل ==================== */
+        .wish-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, #1A1A2E, #16213E);
+            z-index: 10004;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        #showWishToggle:checked ~ .wish-screen { display: flex; }
+        .tree-container { font-size: 5rem; margin-bottom: 15px; animation: float 2.5s infinite alternate; filter: drop-shadow(0 0 20px #4ffbdf); }
+        .wish-list { margin-top: 20px; width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 10px; direction: rtl; }
+        .star-wish-item { background: rgba(255, 255, 255, 0.15); border-right: 4px solid #ffb703; padding: 10px 15px; border-radius: 8px; font-size: 1.1rem; text-align: right; animation: scaleInCard 0.4s ease forwards; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+
+        /* الأنيميشنز والكي فريمز الكلية للموقع */
+        @keyframes pulseHeart { 0% { transform: scale(1); } 100% { transform: scale(1.12); } }
+        @keyframes shootArrow { 0% { left: -250px; top: -50px; opacity: 0; } 100% { left: 35px; top: 25px; opacity: 1; } }
+        @keyframes scaleInCard { 0% { transform: scale(0.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes moonPulse { 0% { transform: scale(1); } 100% { transform: scale(1.04); } }
+        @keyframes bounceCake { to { transform: translateY(-20px); } }
+        @keyframes fadeInText { to { opacity: 1; } }
+        @keyframes fadeOutIntro { to { opacity: 0; visibility: hidden; } }
+        @keyframes fadeInMain { to { opacity: 1; } }
+        @keyframes float { to { transform: translateY(-10px) rotate(5deg); } }
+        @keyframes drawHeart { to { stroke-dashoffset: 0; fill: #ef233c; } }
+        @keyframes showEnvelope { to { opacity: 1; transform: scale(1); } }
+        @keyframes fall { 0% { top: -50px; transform: translateX(0) rotate(0deg); opacity: 0.6; } 100% { top: 105vh; transform: translateX(50px) rotate(360deg); opacity: 0; } }
+        @keyframes fallItem { 0% { top: -50px; transform: translateX(0) rotate(0deg); } 100% { top: 100%; transform: translateX(30px) rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <!-- 0. شاشة القفل بالباسورد وصورتها وصغيرة -->
+    <div id="lock-screen">
+        <div class="lock-card">
+            <img src="1.jpg" alt="أنتِ وصغيرة" class="lock-avatar">
+            <div class="lock-title">اهلا باجمل قمر في الدنيا دي كلها ✨</div>
+            <p style="font-size: 0.85rem; color: #777; margin-bottom: 20px;">الرجاء إدخال رمز المرور السري لفتح المفاجأة 🔑</p>
+            <input type="password" id="pass-field" class="password-input" placeholder="اليوم/الشهر/السنة">
+            <button onclick="checkPassword()" class="lock-btn"> دوسي هنا يا أجمل رنون 💖</button>
+            <div id="error" class="error-msg">الرمز غير صحيح! حاولي مرة أخرى يا جميلة 🔍</div>
+        </div>
+    </div>
+
+    <!-- التوجلز (الـ Checkboxes) للتحكم بالشاشات -->
+    <input type="checkbox" id="showCardToggle" class="toggle-input">
+    <input type="checkbox" id="flipCardToggle" class="toggle-input">
+    <input type="checkbox" id="showLetterToggle" class="toggle-input">
+    <input type="checkbox" id="showTimerToggle" class="toggle-input">
+    <input type="checkbox" id="showGalleryToggle" class="toggle-input">
+    <input type="checkbox" id="showMoonToggle" class="toggle-input"> 
+    <input type="checkbox" id="showWishToggle" class="toggle-input"> 
+
+    <!-- 1. شاشة التحميل والتورتة الترحيبية -->
+    <div class="intro-screen" id="intro-layer">
+        <div class="cake-emoji">🎂</div>
+        <div class="intro-text">Happy Birthday, Ranona 💖</div>
+    </div>
+
+    <div class="hearts-bg"><div class="bg-heart">🩷</div><div class="bg-heart">❤️</div><div class="bg-heart">🩷</div></div>
+
+    <!-- 2. محتوى الصفحة الرئيسي والقائمة التفاعلية المحدثة -->
+    <div class="main-content">
+        <header>
+            <h1>Happy Birthday, Ranona! 🩷</h1>
+            <h2>كل سنة وأنتِ منورة دنيتي يا أحلى رنا ✨</h2>
+        </header>
+
+        <div class="profile-wrapper">
+            <span class="balloon">🎈</span>
+            <img src="2.jpg" alt="Rana" class="profile-pic">
+        </div>
+
+        <!-- القائمة الرأسية المنظمة للأزرار الملونة -->
+        <div class="menu-container">
+            <ul class="btn-list">
+                <li><label for="showCardToggle" class="btn-label btn-card">دوسي هنا يروح قلب محمد ✨</label></li>
+                <li><label for="showLetterToggle" class="btn-label btn-letter">رساله لحبيبه قلبي رونا 💌</label></li>
+                <li><label for="showTimerToggle" class="btn-label btn-timer">فاضل قد اي والقمر بتاعي يكمل ال22 سنه ⏳</label></li>
+                <li><label for="showGalleryToggle" class="btn-label btn-gallery">اجمل رنون حبيبه قلبي 🌸</label></li>
+                <li><label for="showMoonToggle" class="btn-label btn-moon">اكتبي رسالة للقمر 🌙</label></li>
+                <li><label for="showWishToggle" class="btn-label btn-wish">شجرة أمنيات رنا 🌲✨</label></li>
+            </ul>
+        </div>
+
+        <!-- 3. كارت المعايدة الـ Flip -->
+        <div class="card-scene">
+            <label for="flipCardToggle" style="display: block; width: 100%; height: 100%;">
+                <div class="birthday-card">
+                    <div class="card-face card-front">
+                        <span style="font-size: 3.5rem;">🎁</span>
+                        <h3>7bibty Ranona</h3>
+                        <p style="color: #888; font-size: 0.9rem; margin-top: 15px;">(اضغطي على الكارت لفتحه)</p>
+                    </div>
+                    <div class="card-face card-back">
+                        <h4 style="color: var(--primary-pink); margin-bottom: 15px; text-align: center;">إلى رنونا 🩷</h4>
+                        <p>منذ أن دخلتِ حياتي، تحوّلت كل الأيام العادية إلى لحظات مليئة بالدفء والسلام. في عيد ميلادك الـ 22، أتمنى لكِ عاماً يشبه نقاء قلبك وجمال ابتسامتك.</p>
+                        <p style="margin-top: 20px; font-weight: bold; text-align: center; color: var(--soft-pink);">كل عام وأنتِ ملكة قلبي 👑</p>
+                    </div>
+                </div>
+            </label>
+        </div>
+    </div>
+
+    <!-- 4. شاشة الجواب الحمراء والقلب المرسوم -->
+    <div class="love-letter-screen">
+        <div class="svg-container">
+            <svg viewBox="0 0 32 29.6" width="100%" height="100%">
+                <path class="heart-path" d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2 c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z"/>
+            </svg>
+        </div>
+        <div class="envelope-container">
+            <div class="letter-box">
+                <h3 style="color: #ef233c; margin-bottom: 15px; font-size: 1.5rem;">إلى طفلتي الجميلة رنونا 🩷</h3>
+                <p style="font-size: 1.2rem; line-height: 1.7; color: #333;">"في مثل هذا اليوم وُلدت سعادتي. واليوم أحتفل بكِ، وبكل لحظة جمعتنا."</p>
+                <div class="date-badge">
+                    <p style="font-weight: bold; color: #333;">تاريخ لن أنساه أبداً:</p>
+                    <p style="font-size: 1.4rem; color: #d90429; font-weight: bold; margin-top: 5px;">❤️ اول كلمة "بحبك" كانت يوم: 10/9/2024 ❤️</p>
+                </div>
+                <label for="showLetterToggle" class="close-btn">إغلاق الجواب ❌</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. شاشة العداد التنازلي -->
+    <div class="timer-screen">
+        <div class="timer-container">
+            <h3 class="timer-title">العد التنازلي لعيد ميلاد رنونا 👑</h3>
+            <p class="timer-target">متبقي على يوم: 4 يونيو 2026</p>
+            <div class="countdown-box">
+                <div class="time-segment"><div class="time-num" id="days">00</div><div class="time-label">DAYS</div></div>
+                <div class="time-segment"><div class="time-num" id="hours">00</div><div class="time-label">HOURS</div></div>
+                <div class="time-segment"><div class="time-num" id="minutes">00</div><div class="time-label">MINUTES</div></div>
+                <div class="time-segment"><div class="time-num" id="seconds" style="color: var(--primary-pink);">00</div><div class="time-label">SECONDS</div></div>
+            </div>
+            <p id="birthday-wish" style="font-size: 1.1rem; line-height: 1.6; color: #edf2f4; display: none; font-weight: bold;">🎉 كل سنة وأنتِ طيبة يا أحلى رنا في الدنيا! اليوم عيد ميلادك! 🥳🎂</p>
+            <label for="showTimerToggle" class="close-btn" style="background: var(--primary-pink); margin-top: 15px;">العودة للقائمة الرئيسية ↩️</label>
+        </div>
+    </div>
+
+    <!-- 6. شاشة ذكريات الطفولة -->
+    <div class="gallery-screen">
+        <div class="flowers-bg">
+            <div class="falling-item" style="left: 10%; animation-delay: 0s;">🌸</div>
+            <div class="falling-item" style="left: 25%; animation-delay: 2s;">🩷</div>
+            <div class="falling-item" style="left: 45%; animation-delay: 1s;">🌹</div>
+            <div class="falling-item" style="left: 65%; animation-delay: 3s;">🌸</div>
+            <div class="falling-item" style="left: 85%; animation-delay: 1.5s;">❤️</div>
+        </div>
+        <h3 class="gallery-title">بحبك يااجمل بنوته في الدنيا كلها 🌸✨</h3>
+        <p class="gallery-subtitle"> 🩷</p>
+        <div class="photo-grid">
+            <div class="photo-card" style="--r: -3"><img src="3.jpg" alt="رنا وهي صغيرة"><div class="photo-caption">🌸</div></div>
+            <div class="photo-card" style="--r: 2"><img src="4.jpg" alt="ذكريات رنا"><div class="photo-caption"> 🩷</div></div>
+            <div class="photo-card" style="--r: -1"><img src="5.jpg" alt="صورة رنا القديمة"><div class="photo-caption">✨</div></div>
+            <div class="photo-card" style="--r: 4"><img src="6.jpg" alt="أجمل ذكريات"><div class="photo-caption"> 👑</div></div>
+        </div>
+        <label for="showGalleryToggle" class="close-btn" style="background: var(--primary-pink);">العودة للقائمة الرئيسية ↩️</label>
+    </div>
+
+    <!-- 7. صفحة 5: شاشة القمر التفاعلية والرسالة السرية -->
+    <div class="moon-screen">
+        <div class="moon-card">
+            <div id="moon-form-area">
+                <h3 style="color: #5bc0be; font-size: 1.5rem; margin-bottom: 10px;">أرسلي رسالة سرية إلى السماء 🌙</h3>
+                <textarea id="moon-text" class="moon-input" placeholder="اكتبي رسالتكِ هنا يا أميرتي... 🩷"></textarea>
+                <button onclick="sendToMoon()" class="moon-send-btn">إرسال إلى القمر 🚀</button>
+            </div>
+            <div id="moon-result-area" class="moon-result-container">
+                <div class="moon-glow"><img src="8.jpg"></div>
+                <p class="moon-success-text">✨ تـم الإرسـال بـنـجـاح! ✨<br><br>الرسالة وصلت لقلب محمد بنجاح، وبمجرد وصولها.. اختفى القمر البعيد وظهر القمر الحقيقي هنا! 🩷</p>
+            </div>
+            <br><br><label for="showMoonToggle" onclick="resetMoonForm()" class="close-btn" style="background: rgba(255,255,255,0.15);">العودة لقائمة ↩️</label>
+        </div>
+    </div>
+
+    <!-- 8. صفحة 6: شاشة مفاجأة منتصف الليل السحرية -->
+    <div id="midnight-surprise-screen">
+        <div id="arrow-heart-stage" class="animation-container">
+            <div class="big-heart">❤️<div class="cupid-arrow">💘</div></div>
+            <div class="surprise-title">happy birthday ya Rona 💕😘</div>
+        </div>
+        <div id="birthday-message-stage" class="grand-birthday-card">
+            <h2>🎉 كل سنة وأنتِ طيبة يا أحلى رنا 🎉</h2>
+            <p>الليلة قفلنا الـ 21 وبدأنا الـ 22 سنة سوا يروح قلب وعين محمد.. دايماً كنتِ ولا زلتي أجمل حاجة حصلت في دنيتي كلها.. أتمنى السنة الجديدة دي تكون سنة تحقيق كل أحلامك وسعادة لقلبك الأبيض النقي.. بحبك جداً ومستني كل السنين الجاية نعديها سوا ونحتفل بيها مع بعض! 🩷👑</p>
+            <br><button onclick="closeMidnightSurprise()" class="close-btn" style="background: #ff477e;">دخول للموقع الرئيسي 💖</button>
+        </div>
+    </div>
+
+    <!-- 9. صفحة 7: شجرة أمنيات المستقبل التفاعلية -->
+    <div class="wish-screen">
+        <div class="moon-card" style="max-width: 480px; background: rgba(0, 0, 0, 0.4);">
+            <div class="tree-container">🌲✨</div>
+            <h3 style="color: #02c39a; font-size: 1.6rem; margin-bottom: 10px;">شجرة أمنيات رنا للمستقبل 🌟</h3>
+            <p style="font-size: 0.95rem; color: #ccdbdc; margin-bottom: 20px;">امسكي نجمة واكتبي أمنيتك لسنواتنا الجاية وسنوات عمرك الجديدة سوا يروح محمد.. 🩷</p>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="wish-input" class="password-input" placeholder="اكتبي أمنية لتعليقها على الشجرة... 🌟" style="margin-bottom: 0; font-size: 1rem; border-color: #02c39a; text-align: right; background: rgba(0,0,0,0.4); color: white;">
+                <button onclick="hangWish()" class="moon-send-btn" style="background: #02c39a; box-shadow: 0 4px 12px rgba(2, 195, 154, 0.4); padding: 5px 20px; font-size: 1rem;">تعليق 🌟</button>
+            </div>
+            <div class="wish-list" id="global-wish-list"></div>
+            <br><br>
+            <label for="showWishToggle" class="close-btn" style="background: rgba(255,255,255,0.1); color: white;">العودة للقائمة الرئيسية ↩️</label>
+        </div>
+    </div>
+
+
+    <script>
+        function checkPassword() {
+            const inputPass = document.getElementById("pass-field").value;
+            const errorElement = document.getElementById("error");
+            
+            if (inputPass === "4/6/2004") {
+                errorElement.style.display = "none";
+                const lockScreen = document.getElementById("lock-screen");
+                lockScreen.style.opacity = "0";
+                
+                setTimeout(() => {
+                    lockScreen.style.display = "none";
+                    checkMidnightCondition();
+                }, 600);
+            } else {
+                errorElement.style.display = "block";
+            }
+        }
+
+        function checkMidnightCondition() {
+            const targetSurpriseTime = new Date("June 4, 2026 00:00:00").getTime();
+            const currentTime = new Date().getTime();
+            if (currentTime >= targetSurpriseTime) {
+                document.getElementById("midnight-surprise-screen").style.display = "flex";
+                setTimeout(() => {
+                    document.getElementById("arrow-heart-stage").style.display = "none";
+                    document.getElementById("birthday-message-stage").style.display = "block";
+                }, 5000);
+            } else {
+                document.getElementById("intro-layer").style.display = "flex";
+            }
+        }
+
+        function closeMidnightSurprise() {
+            document.getElementById("midnight-surprise-screen").style.opacity = "0";
+            setTimeout(() => {
+                document.getElementById("midnight-surprise-screen").style.display = "none";
+                document.getElementById("intro-layer").style.display = "flex";
+            }, 600);
+        }
+
+        function sendToMoon() {
+            if(document.getElementById("moon-text").value.trim() === "") { alert("اكتبي كلام أولاً يا جميلتي! 🌸"); return; }
+            document.getElementById("moon-form-area").style.display = "none";
+            document.getElementById("moon-result-area").style.display = "flex";
+        }
+        function resetMoonForm() {
+            setTimeout(() => {
+                document.getElementById("moon-form-area").style.display = "block";
+                document.getElementById("moon-result-area").style.display = "none";
+                document.getElementById("moon-text").value = "";
+            }, 500);
+        }
+
+        function hangWish() {
+            const wishInput = document.getElementById("wish-input");
+            const wishText = wishInput.value.trim();
+            if(wishText === "") { alert("اكتبي أمنيتكِ أولاً لتعليقها على الشجرة! 🌲✨"); return; }
+
+            const wishList = document.getElementById("global-wish-list");
+            const newItem = document.createElement("div");
+            newItem.className = "star-wish-item";
+            newItem.innerHTML = `⭐ ${wishText}`;
+            
+            wishList.appendChild(newItem);
+            wishInput.value = ""; 
+            alert("تم تعليق أمنيتك بنجاح على الشجرة وضخها في سماء علاقتنا! ✨🌲🩷");
+        }
+
+        function updateCountdown() {
+            const targetDate = new Date("June 4, 2026 00:00:00").getTime();
+            const now = new Date().getTime();
+            const difference = targetDate - now;
+
+            const d = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const h = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((difference % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerText = d >= 0 ? d : 0;
+            document.getElementById("hours").innerText = h >= 0 ? (h < 10 ? "0" + h : h) : "00";
+            document.getElementById("minutes").innerText = m >= 0 ? (m < 10 ? "0" + m : m) : "00";
+            document.getElementById("seconds").innerText = s >= 0 ? (s < 10 ? "0" + s : s) : "00";
+
+            if (difference <= 0) {
+                document.getElementById("birthday-wish").style.display = "block";
+                checkMidnightCondition();
+                clearInterval(timerInterval);
+            }
+        }
+        const timerInterval = setInterval(updateCountdown, 1000);
+        updateCountdown();
+    </script>
+</body>
+</html>
